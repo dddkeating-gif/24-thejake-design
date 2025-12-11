@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Interactive 3D Physics Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Basic reset and styling */
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      font-family: sans-serif;
+      color: #fff;
+    }
+
+    /* Canvas will fill the entire viewport */
+    canvas {
+      display: block;
+    }
+
+    /* Overlay title */
+    #title {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      font-size: 2rem;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="title">Physics Playground</div>
+  <script type="module">
+    // Import Three.js and supporting modules from CDNs
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.module.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.154.0/examples/jsm/controls/OrbitControls.js';
+    import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js';
+
+    // Set up Three.js scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 5, 12);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Add orbit controls for navigation
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enablePan = false;
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x404040, 1.2);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    // Physics world setup
+    const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
+
+    // Create a ground plane in physics and graphics
+    const groundMaterial = new CANNON.Material();
+    const groundBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane(), material: groundMaterial });
+    groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+    world.addBody(groundBody);
+
+    const groundGeo = new THREE.PlaneGeometry(20, 20);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.rotation.x = -Math.PI / 2;
+    scene.add(groundMesh);
+
+    // Arrays to keep track of mesh and body pairs
+    const meshes = [];
+    const bodies = [];
+
+    // Utility to add a shape (box or sphere)
+    function addShape(type, position) {
+      let bodyShape, geometry;
+      const mass = 1;
+      if (type === 'box') {
+        bodyShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
+        geometry = new THREE.BoxGeometry(1, 1, 1);
+      } else if (type === 'sphere') {
+        bodyShape = new CANNON.Sphere(0.5);
+        geometry = new THREE.SphereGeometry(0.5, 32, 32);
+      }
+      const body = new CANNON.Body({ mass, shape: bodyShape });
+      body.position.copy(position);
+      world.addBody(body);
+      const material = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+      meshes.push(mesh);
+      bodies.push(body);
+    }
+
+    // Add some initial shapes
+    const initialPositions = [
+      new CANNON.Vec3(-2, 4, 0),
+      new CANNON.Vec3(0, 6, 0),
+      new CANNON.Vec3(2, 5, 1),
+      new CANNON.Vec3(-1, 7, -1),
+      new CANNON.Vec3(1, 8, 2)
+    ];
+    const shapeTypes = ['box', 'sphere', 'box', 'sphere', 'box'];
+    for (let i = 0; i < shapeTypes.length; i++) {
+      addShape(shapeTypes[i], initialPositions[i]);
+    }
+
+    // Raycasting for dragging objects
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let selectedBody = null;
+    const plane = new THREE.Plane();
+    const planeNormal = new THREE.Vector3();
+    const intersectPoint = new THREE.Vector3();
+
+    function getIntersections() {
+      const intersects = [];
+      for (let i = 0; i < meshes.length; i++) {
+        const mesh = meshes[i];
+        const hit = raycaster.intersectObject(mesh, false);
+        if (hit.length > 0) {
+          intersects.push({ distance: hit[0].distance, index: i, point: hit[0].point });
+        }
+      }
+      return intersects.sort((a, b) => a.distance - b.distance);
+    }
+
+    function onPointerDown(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = getIntersections();
+      if (hits.length > 0) {
+        const hit = hits[0];
+        selectedBody = bodies[hit.index];
+        // Freeze rotation while dragging
+        selectedBody.angularDamping = 1;
+        // Define plane for dragging based on camera direction
+        planeNormal.copy(camera.getWorldDirection(new THREE.Vector3()));
+        plane.setFromNormalAndCoplanarPoint(planeNormal, hit.point);
+      }
+    }
+
+    function onPointerMove(event) {
+      if (!selectedBody) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      if (raycaster.ray.intersectPlane(plane, intersectPoint)) {
+        selectedBody.position.set(intersectPoint.x, intersectPoint.y, intersectPoint.z);
+        // Reset velocity to avoid the object shooting off when released
+        selectedBody.velocity.set(0, 0, 0);
+      }
+    }
+
+    function onPointerUp() {
+      if (selectedBody) {
+        selectedBody = null;
+      }
+    }
+
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    renderer.domElement.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      // Step the physics world
+      world.fixedStep();
+      // Sync Three.js meshes with Cannon.js bodies
+      for (let i = 0; i < meshes.length; i++) {
+        meshes[i].position.copy(bodies[i].position);
+        meshes[i].quaternion.copy(bodies[i].quaternion);
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
