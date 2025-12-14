@@ -19,8 +19,15 @@
       --nav-h: 80px;
       --gutter: 40px;
 
-      /* Content column width (wider than before, shared alignment target) */
+      /* Content column width (wider than original) */
       --content-max: 880px;
+
+      /*
+        Shift content LEFT to land halfway between:
+        - old layout (gutter aligned)
+        - new layout (fully centered content-wrap)
+      */
+      --content-shift: max(0px, calc((100vw - var(--content-max)) / 4));
 
       /* Icon section colors (cohesive with site) */
       --icon-gray: #b7bdc3;
@@ -59,6 +66,7 @@
       max-width: var(--content-max);
       margin: 0 auto;
       padding: 0 var(--gutter);
+      transform: translateX(calc(-1 * var(--content-shift)));
     }
 
     /* Top navigation bar */
@@ -88,12 +96,7 @@
       text-decoration: underline;
     }
 
-    /* HERO
-       - Sits just under the fixed nav
-       - Fills the remaining viewport height
-       - Background image covers, bottle visible on mobile
-       - H1 + ORDER aligned to content column
-    */
+    /* HERO */
     #hero {
       margin-top: var(--nav-h);
       min-height: calc(100vh - var(--nav-h));
@@ -106,7 +109,6 @@
         center / cover no-repeat;
     }
 
-    /* Use dynamic viewport on modern mobile browsers to avoid address bar issues */
     @supports (height: 100dvh) {
       #hero {
         min-height: calc(100dvh - var(--nav-h));
@@ -144,7 +146,7 @@
       background: var(--dark-blue);
     }
 
-    /* Info column (What's Good / Contact / Ingredients) */
+    /* Info column (What's Good / Ingredients) */
     #info {
       padding: 90px 0;
       text-align: left;
@@ -154,8 +156,9 @@
       font-size: 3.8rem;
       font-weight: 700;
       margin-bottom: 22px;
-      text-align: center;
+      text-align: left;         /* left align */
       line-height: 1.05;
+      color: var(--blue);       /* same color as H2 */
     }
 
     #info p {
@@ -165,12 +168,10 @@
       margin-bottom: 0;
     }
 
-    #contact,
     #ingredients {
       padding-top: 40px;
     }
 
-    #contact h2,
     #ingredients h2 {
       font-size: 1.6rem;
       margin-bottom: 10px;
@@ -178,13 +179,13 @@
       font-weight: 600;
     }
 
-    /* Banner image under info (this is the "bottle on the table" image) */
+    /* Banner image under info (bottle on the table) */
     #banner {
       display: block;
       width: 100%;
     }
 
-    /* Feature icons section (recreated) */
+    /* Feature icons section */
     .features {
       background: #fff;
       padding: 86px 0;
@@ -367,6 +368,7 @@
       :root {
         --gutter: 20px;
         --nav-h: 70px;
+        --content-shift: 0px; /* avoid any transform nudge on small screens */
       }
 
       nav {
@@ -377,7 +379,6 @@
 
       #hero {
         margin-top: var(--nav-h);
-        /* focus the bottle more toward center on narrow screens */
         background-position: 80% center;
       }
 
@@ -411,7 +412,6 @@
   <nav>
     <a href="#" id="cartLink">Cart</a>
     <a href="#about">About</a>
-    <a href="#contact">Contact</a>
     <a href="#ingredients">Ingredients</a>
   </nav>
 
@@ -425,18 +425,13 @@
     </div>
   </section>
 
-  <!-- What's Good / Contact / Ingredients (moved between hero and banner) -->
+  <!-- What's Good / Ingredients (Contact removed) -->
   <main id="info" class="content-wrap">
     <section id="about">
       <h1>What's Good</h1>
       <p>
         JakeyJuice is my everyday hot sauce—sharp, tangy, and interesting on basically anything. Bright, sweet, heat.
       </p>
-    </section>
-
-    <section id="contact">
-      <h2>Contact</h2>
-      <p>Drop us a line about bulk orders, collaborations, or spicy ideas.</p>
     </section>
 
     <section id="ingredients">
@@ -452,7 +447,7 @@
     alt="Jakey Juice Hot Sauce Banner"
   />
 
-  <!-- Recreated icon section (after banner image) -->
+  <!-- Icon section -->
   <section class="features">
     <div class="content-wrap">
       <div class="features-grid">
@@ -502,7 +497,7 @@
     </div>
   </section>
 
-  <!-- Fullwidth video background (after icon section) -->
+  <!-- Fullwidth video background -->
   <section class="video-bg" aria-label="Jakey Juice video background">
     <video
       autoplay
@@ -510,7 +505,7 @@
       loop
       playsinline
       preload="metadata"
-      src="Jakey%20Juice%20Hot%20Sauce%20Videos%20(2).mp4"
+      src="Jakey%20Juice%20Hot%20Sauce%20Videos%20%282%29.mp4"
     ></video>
     <div class="overlay" aria-hidden="true"></div>
   </section>
@@ -600,7 +595,6 @@
       checkoutOverlay.style.display = 'none';
       checkoutForm.style.display    = 'block';
       successMessage.style.display  = 'none';
-      // reset quantity & total for demo feel
       qty = 1;
       qtySpan.textContent = qty;
       updateTotal();
