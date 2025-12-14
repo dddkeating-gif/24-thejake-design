@@ -7,7 +7,7 @@
 
   <!-- Montserrat font -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -18,6 +18,13 @@
       --dark-blue: #1d3f60;
       --nav-h: 80px;
       --gutter: 40px;
+
+      /* Content column width (wider than before, shared alignment target) */
+      --content-max: 880px;
+
+      /* Icon section colors (cohesive with site) */
+      --icon-gray: #b7bdc3;
+      --icon-accent: #d8842b;
     }
 
     * {
@@ -35,6 +42,23 @@
       line-height: 1.5;
       color: #333;
       background: #ffffff;
+    }
+
+    /* NEVER USE ROUNDED CORNERS ON BUTTONS */
+    button {
+      border-radius: 0 !important;
+    }
+
+    /* Better anchor positioning with fixed nav */
+    section {
+      scroll-margin-top: calc(var(--nav-h) + 16px);
+    }
+
+    /* Shared content column */
+    .content-wrap {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 0 var(--gutter);
     }
 
     /* Top navigation bar */
@@ -68,14 +92,15 @@
        - Sits just under the fixed nav
        - Fills the remaining viewport height
        - Background image covers, bottle visible on mobile
+       - H1 + ORDER aligned to content column
     */
     #hero {
       margin-top: var(--nav-h);
-      min-height: calc(100vh - var(--nav-h)); /* desktop & basic fallback */
+      min-height: calc(100vh - var(--nav-h));
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      padding: 0 var(--gutter);
+      justify-content: center;
+      padding: 0;
       background:
         url("https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg")
         center / cover no-repeat;
@@ -86,6 +111,10 @@
       #hero {
         min-height: calc(100dvh - var(--nav-h));
       }
+    }
+
+    .hero-inner {
+      width: 100%;
     }
 
     .hero-content {
@@ -107,8 +136,7 @@
       padding: 15px 40px;
       border: none;
       font-size: 20px;
-      font-weight: 600;
-      border-radius: 4px;
+      font-weight: 300; /* thinner */
       cursor: pointer;
     }
 
@@ -116,39 +144,30 @@
       background: var(--dark-blue);
     }
 
-    /* Banner image under hero */
-    #banner {
-      display: block;
-      width: 100%;
-    }
-
-    /* About section */
-    #about {
-      padding: 80px var(--gutter);
-      max-width: 800px;
-      margin: 0 auto;
+    /* Info column (What's Good / Contact / Ingredients) */
+    #info {
+      padding: 90px 0;
       text-align: left;
     }
 
     #about h1 {
-      font-size: 3rem;
+      font-size: 3.8rem;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
+      text-align: center;
+      line-height: 1.05;
     }
 
-    #about p {
+    #info p {
       font-size: 1rem;
       color: #444;
-      line-height: 1.6;
-      margin-bottom: 1rem;
+      line-height: 1.7;
+      margin-bottom: 0;
     }
 
-    /* Simple placeholders for Contact / Ingredients anchors */
     #contact,
     #ingredients {
-      padding: 40px var(--gutter);
-      max-width: 800px;
-      margin: 0 auto;
+      padding-top: 40px;
     }
 
     #contact h2,
@@ -156,6 +175,87 @@
       font-size: 1.6rem;
       margin-bottom: 10px;
       color: var(--blue);
+      font-weight: 600;
+    }
+
+    /* Banner image under info (this is the "bottle on the table" image) */
+    #banner {
+      display: block;
+      width: 100%;
+    }
+
+    /* Feature icons section (recreated) */
+    .features {
+      background: #fff;
+      padding: 86px 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 56px;
+      align-items: start;
+    }
+
+    .feature {
+      text-align: center;
+    }
+
+    .feature-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .feature-icon .stroke {
+      stroke: var(--icon-gray);
+    }
+
+    .feature-icon .accent {
+      stroke: var(--icon-accent);
+    }
+
+    .feature h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .feature p {
+      margin: 0;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    /* Full-width video background section */
+    .video-bg {
+      position: relative;
+      width: 100%;
+      min-height: clamp(360px, 65vh, 760px);
+      overflow: hidden;
+      background: #111;
+    }
+
+    .video-bg video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-bg .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.28),
+        rgba(0,0,0,0.14),
+        rgba(0,0,0,0.28)
+      );
+      pointer-events: none;
     }
 
     /* Checkout modal overlay */
@@ -174,7 +274,7 @@
       position: relative;
       background: #fff;
       padding: 30px;
-      border-radius: 8px;
+      border-radius: 8px; /* not a button */
       width: 100%;
       max-width: 500px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -218,7 +318,6 @@
       color: #fff;
       font-size: 20px;
       cursor: pointer;
-      border-radius: 4px;
     }
 
     .quantity span {
@@ -239,7 +338,6 @@
       border: none;
       padding: 12px 20px;
       font-size: 1rem;
-      border-radius: 4px;
       margin-top: 20px;
       cursor: pointer;
       width: 100%;
@@ -279,7 +377,6 @@
 
       #hero {
         margin-top: var(--nav-h);
-        padding: 0 var(--gutter);
         /* focus the bottle more toward center on narrow screens */
         background-position: 80% center;
       }
@@ -293,12 +390,17 @@
         text-align: center;
       }
 
-      #about {
-        padding: 56px var(--gutter);
+      #info {
+        padding: 60px 0;
       }
 
       #about h1 {
-        font-size: 2.2rem;
+        font-size: 2.6rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
       }
     }
   </style>
@@ -315,36 +417,102 @@
 
   <!-- Hero Section -->
   <section id="hero">
-    <div class="hero-content">
-      <h1>Loose the juice.</h1>
-      <button class="order-btn" id="orderBtn">ORDER</button>
+    <div class="content-wrap hero-inner">
+      <div class="hero-content">
+        <h1>Loose the juice.</h1>
+        <button class="order-btn" id="orderBtn">ORDER</button>
+      </div>
     </div>
   </section>
 
-  <!-- Banner Image -->
+  <!-- What's Good / Contact / Ingredients (moved between hero and banner) -->
+  <main id="info" class="content-wrap">
+    <section id="about">
+      <h1>What's Good</h1>
+      <p>
+        JakeyJuice is my everyday hot sauce—sharp, tangy, and interesting on basically anything. Bright, sweet, heat.
+      </p>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>Drop us a line about bulk orders, collaborations, or spicy ideas.</p>
+    </section>
+
+    <section id="ingredients">
+      <h2>Ingredients</h2>
+      <p>red bell pepper, distilled vinegar, onions, pure cane sugar, brown sugar (cane sugar and molasses), red habanero pepper mash (red habanero peppers, salt), jolokia pepper mash (bhut jolokia peppers, salt), yellow scotch bonnet pepper mash (yellow scotch bonnet pepper, salt), lemon juice, garlic, ginger root, xanthan gum</p>
+    </section>
+  </main>
+
+  <!-- Banner Image (bottle on table) -->
   <img
     id="banner"
     src="https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/banner.jpg"
     alt="Jakey Juice Hot Sauce Banner"
   />
 
-  <!-- About Section -->
-  <section id="about">
-    <h1>What's Good</h1>
-    <p>
-      JakeyJuice is my everyday hot sauce—sharp, tangy, and interesting on basically anything.  Bright, sweet, heat.
-    </p>
+  <!-- Recreated icon section (after banner image) -->
+  <section class="features">
+    <div class="content-wrap">
+      <div class="features-grid">
+        <div class="feature">
+          <!-- Icon 1: bottle + calendar -->
+          <svg class="feature-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+            <path class="stroke" d="M18 16h10v6l4 6v32H18V16Z" stroke-width="2.5" />
+            <path class="accent" d="M18 16h10" stroke-width="2.5" />
+            <path class="stroke" d="M44 18h26v42H44V18Z" stroke-width="2.5" />
+            <path class="stroke" d="M44 28h26" stroke-width="2.5" />
+            <path class="accent" d="M56 49V38h-6" stroke-width="2.5" />
+            <path class="accent" d="M52 52h10" stroke-width="2.5" />
+          </svg>
+
+          <h3>Everyday hot sauce</h3>
+          <p>Our hot sauce pairs well with anything and adds almost 0 calories.</p>
+        </div>
+
+        <div class="feature">
+          <!-- Icon 2: smile + droplet -->
+          <svg class="feature-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+            <circle class="stroke" cx="36" cy="40" r="18" stroke-width="2.5" />
+            <path class="stroke" d="M30 38h0.01" stroke-width="5" stroke-linecap="round" />
+            <path class="stroke" d="M42 38h0.01" stroke-width="5" stroke-linecap="round" />
+            <path class="stroke" d="M29 46c2.5 3 6 5 9.5 5s7-2 9.5-5" stroke-width="2.5" stroke-linecap="round" />
+            <path class="accent" d="M58 26c3.5 5 3.5 8.5 0 13c-3.5-4.5-3.5-8 0-13Z" stroke-width="2.5" />
+          </svg>
+
+          <h3>Incredible sweet heat</h3>
+          <p>The perfect balance of sweet and spicy, measuring 3/5 in heat intensity.</p>
+        </div>
+
+        <div class="feature">
+          <!-- Icon 3: pepper + rays -->
+          <svg class="feature-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+            <path class="stroke" d="M38 58c10 0 20-8 20-18 0-8-6-14-14-14-6 0-10 3-12 7-2 4-1 10 2 14" stroke-width="2.5" stroke-linecap="round" />
+            <path class="stroke" d="M44 22c0-4 3-7 8-7" stroke-width="2.5" stroke-linecap="round" />
+            <path class="accent" d="M62 18l6-4" stroke-width="2.5" stroke-linecap="round" />
+            <path class="accent" d="M64 28h8" stroke-width="2.5" stroke-linecap="round" />
+            <path class="accent" d="M62 38l6 4" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+
+          <h3>Peppers of the gods</h3>
+          <p>We use a perfect blend of habanero, scotch bonnet, and ghost peppers.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- Simple placeholder sections so anchor links go somewhere -->
-  <section id="contact">
-    <h2></h2>
-    <p></p>
-  </section>
-
-  <section id="ingredients">
-    <h2>Ingredients</h2>
-    <p>red bell pepper, distilled vinegar, onions, pure cane sugar, brown sugar (cane sugar and molasses), red habanero pepper mash (red habanero peppers, salt), jolokia pepper mash (bhut jolokia peppers, salt), yellow scotch bonnet pepper mash (yellow scotch bonnet pepper, salt), lemon juice, garlic, ginger root, xanthan gum</p>
+  <!-- Fullwidth video background (after icon section) -->
+  <section class="video-bg" aria-label="Jakey Juice video background">
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      src="Jakey%20Juice%20Hot%20Sauce%20Videos%20(2).mp4"
+    ></video>
+    <div class="overlay" aria-hidden="true"></div>
   </section>
 
   <!-- Checkout Overlay & Modal -->
