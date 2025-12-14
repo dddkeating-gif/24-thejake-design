@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jakey Juice Hot Sauce</title>
 
-  <!-- Google Font -->
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet"
-  >
+  />
 
   <style>
     :root {
@@ -24,23 +23,25 @@
       padding: 0;
     }
 
+    html,
     body {
+      height: 100%;
       font-family: 'Montserrat', sans-serif;
-      line-height: 1.5;
       color: #333;
     }
 
-    /* Top navigation bar */
+    /* NAV */
     nav {
-      display: flex;
-      justify-content: flex-start;
-      gap: 40px;
-      padding: 20px 40px;
-      background: #f1f2f3;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      padding: 0 40px;
+      background: #f1f2f3;
       z-index: 10;
     }
 
@@ -55,24 +56,28 @@
       text-decoration: underline;
     }
 
-    /* Hero section */
-#hero {
-  position: relative;
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 80px;
-  padding-left: 40px;
-  background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
-    center / cover no-repeat;
-}
+    /* HERO */
+    #hero {
+      height: 100vh;                 /* 🔒 fills viewport */
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 80px;             /* nav offset INSIDE hero */
+      padding-left: 40px;
+      background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
+        center / cover no-repeat;
+    }
 
+    /* mobile viewport sanity */
+    @supports (height: 100svh) {
+      #hero {
+        height: 100svh;
+      }
     }
 
     .hero-content {
       max-width: 600px;
-      text-align: left;
     }
 
     .hero-content h1 {
@@ -97,40 +102,34 @@
       background: var(--dark-blue);
     }
 
-    /* Banner image under hero */
+    /* BANNER */
     #banner {
       display: block;
       width: 100%;
     }
 
-    /* About section */
+    /* ABOUT */
     #about {
-      padding: 80px 40px;
       max-width: 800px;
       margin: 0 auto;
-      text-align: left;
+      padding: 80px 40px;
     }
 
     #about h1 {
       font-size: 3rem;
-      font-weight: 700;
       margin-bottom: 20px;
     }
 
     #about p {
       font-size: 1rem;
-      color: #444;
       line-height: 1.6;
-      margin-bottom: 1rem;
+      color: #444;
     }
 
-    /* Checkout modal overlay */
+    /* CHECKOUT */
     .checkout-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       background: rgba(0, 0, 0, 0.5);
       display: none;
       align-items: center;
@@ -139,75 +138,12 @@
     }
 
     .checkout-modal {
-      position: relative;
       background: #fff;
       padding: 30px;
       border-radius: 8px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .checkout-modal h2 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
-
-    .checkout-modal label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 500;
-    }
-
-    .checkout-modal input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    .quantity {
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .quantity button {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: var(--blue);
-      color: #fff;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .quantity span {
-      margin: 0 10px;
-      font-size: 20px;
-    }
-
-    .total {
-      margin-top: 20px;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .place-order {
-      background: var(--blue);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border-radius: 4px;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-
-    .place-order:hover {
-      background: var(--dark-blue);
+      position: relative;
     }
 
     .close-btn {
@@ -216,18 +152,11 @@
       right: 20px;
       font-size: 1.5rem;
       cursor: pointer;
-      line-height: 1;
-    }
-
-    .success-message {
-      display: none;
-      text-align: center;
     }
   </style>
 </head>
 
 <body>
-  <!-- Navigation Bar -->
   <nav>
     <a href="#" id="cartLink">Cart</a>
     <a href="#about">About</a>
@@ -235,7 +164,6 @@
     <a href="#ingredients">Ingredients</a>
   </nav>
 
-  <!-- Hero Section -->
   <section id="hero">
     <div class="hero-content">
       <h1>Loose the juice.</h1>
@@ -243,14 +171,12 @@
     </div>
   </section>
 
-  <!-- Banner Image -->
   <img
     id="banner"
     src="https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/banner.jpg"
     alt="Jakey Juice Hot Sauce Banner"
-  >
+  />
 
-  <!-- About Section -->
   <section id="about">
     <h1>ABOUT</h1>
     <p>
@@ -258,94 +184,25 @@
     </p>
   </section>
 
-  <!-- Checkout Overlay & Modal -->
   <div class="checkout-overlay" id="checkoutOverlay">
     <div class="checkout-modal">
       <span class="close-btn" id="closeCheckout">×</span>
-      <h2>Checkout</h2>
-
       <p><strong>Jakey Juice Hot Sauce</strong> — $12 per bottle</p>
-
-      <div class="quantity">
-        <button id="decreaseQty">-</button>
-        <span id="qty">1</span>
-        <button id="increaseQty">+</button>
-      </div>
-
-      <p class="total">Total: $<span id="total">12</span></p>
-
-      <form id="checkoutForm">
-        <label>Name</label>
-        <input type="text" required>
-
-        <label>Email</label>
-        <input type="email" required>
-
-        <label>Address</label>
-        <input type="text" required>
-
-        <label>City</label>
-        <input type="text" required>
-
-        <label>State</label>
-        <input type="text" required>
-
-        <label>ZIP Code</label>
-        <input type="text" required>
-
-        <button type="submit" class="place-order">Place order (demo)</button>
-      </form>
-
-      <div class="success-message" id="successMessage">
-        <h3>Order received!</h3>
-        <p>This demo does not charge your card.</p>
-      </div>
     </div>
   </div>
 
   <script>
     const orderBtn = document.getElementById('orderBtn');
     const cartLink = document.getElementById('cartLink');
-    const checkoutOverlay = document.getElementById('checkoutOverlay');
-    const closeCheckout = document.getElementById('closeCheckout');
-    const increaseQty = document.getElementById('increaseQty');
-    const decreaseQty = document.getElementById('decreaseQty');
-    const qtySpan = document.getElementById('qty');
-    const totalSpan = document.getElementById('total');
+    const overlay = document.getElementById('checkoutOverlay');
+    const closeBtn = document.getElementById('closeCheckout');
 
-    let qty = 1;
-    const price = 12;
-
-    function updateTotal() {
-      totalSpan.textContent = (qty * price).toFixed(2);
-    }
-
-    orderBtn.onclick = () => checkoutOverlay.style.display = 'flex';
+    orderBtn.onclick = () => (overlay.style.display = 'flex');
     cartLink.onclick = e => {
       e.preventDefault();
-      checkoutOverlay.style.display = 'flex';
+      overlay.style.display = 'flex';
     };
-    closeCheckout.onclick = () => checkoutOverlay.style.display = 'none';
-
-    increaseQty.onclick = () => {
-      qty++;
-      qtySpan.textContent = qty;
-      updateTotal();
-    };
-
-    decreaseQty.onclick = () => {
-      if (qty > 1) {
-        qty--;
-        qtySpan.textContent = qty;
-        updateTotal();
-      }
-    };
-
-    document.getElementById('checkoutForm').onsubmit = e => {
-      e.preventDefault();
-      e.target.style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
-    };
+    closeBtn.onclick = () => (overlay.style.display = 'none');
   </script>
 </body>
 </html>
