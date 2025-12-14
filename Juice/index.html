@@ -56,16 +56,18 @@
     }
 
     /* Hero section */
-    #hero {
-      position: relative;
-      height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding-top: 80px;     /* offset for fixed nav */
-      padding-left: 40px;
-      background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
-        center / cover no-repeat;
+#hero {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 80px;
+  padding-left: 40px;
+  background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
+    center / cover no-repeat;
+}
+
     }
 
     .hero-content {
