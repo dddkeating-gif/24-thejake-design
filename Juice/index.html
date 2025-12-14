@@ -4,24 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jakey Juice Hot Sauce</title>
-  <!-- Import Montserrat from Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
   <style>
     :root {
       --red: #c92828;
       --blue: #2b4f7e;
       --dark-blue: #1d3f60;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: 'Montserrat', sans-serif;
       line-height: 1.5;
       color: #333;
     }
+
     /* Top navigation bar */
     nav {
       display: flex;
@@ -31,42 +39,47 @@
       background: #f1f2f3;
       position: fixed;
       top: 0;
-
       left: 0;
       right: 0;
       z-index: 10;
     }
+
     nav a {
       color: var(--blue);
       text-decoration: none;
       font-size: 18px;
       font-weight: 500;
     }
+
     nav a:hover {
       text-decoration: underline;
     }
-    
+
     /* Hero section */
     #hero {
       position: relative;
       height: 90vh;
-
-          display: flex;
-    background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg') center/cover no-repeat;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      padding-top: 80px; /* offset for fixed nav */
+      justify-content: flex-start;
+      padding-top: 80px;     /* offset for fixed nav */
+      padding-left: 40px;
+      background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
+        center / cover no-repeat;
     }
+
     .hero-content {
       max-width: 600px;
       text-align: left;
     }
+
     .hero-content h1 {
-      font-size: 4rem; /* large headline */
+      font-size: 4rem;
       font-weight: 700;
       color: var(--red);
       margin-bottom: 20px;
     }
+
     .order-btn {
       background: var(--blue);
       color: #fff;
@@ -77,32 +90,38 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .order-btn:hover {
       background: var(--dark-blue);
-    
     }
+
     /* Banner image under hero */
     #banner {
       display: block;
       width: 100%;
-      
     }
-    
+
     /* About section */
     #about {
       padding: 80px 40px;
       max-width: 800px;
       margin: 0 auto;
+      text-align: left;
     }
+
     #about h1 {
       font-size: 3rem;
       font-weight: 700;
       margin-bottom: 20px;
     }
+
     #about p {
       font-size: 1rem;
       color: #444;
+      line-height: 1.6;
+      margin-bottom: 1rem;
     }
+
     /* Checkout modal overlay */
     .checkout-overlay {
       position: fixed;
@@ -116,26 +135,28 @@
       justify-content: center;
       z-index: 100;
     }
+
     .checkout-modal {
-      
       position: relative;
       background: #fff;
       padding: 30px;
-
       border-radius: 8px;
       width: 90%;
       max-width: 500px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
+
     .checkout-modal h2 {
       font-size: 2rem;
       margin-bottom: 20px;
     }
+
     .checkout-modal label {
       display: block;
       margin-top: 10px;
       font-weight: 500;
     }
+
     .checkout-modal input {
       width: 100%;
       padding: 10px;
@@ -144,11 +165,13 @@
       border-radius: 4px;
       font-family: 'Montserrat', sans-serif;
     }
+
     .quantity {
       display: flex;
       align-items: center;
       margin-top: 10px;
     }
+
     .quantity button {
       width: 32px;
       height: 32px;
@@ -158,15 +181,18 @@
       font-size: 20px;
       cursor: pointer;
     }
+
     .quantity span {
       margin: 0 10px;
       font-size: 20px;
     }
+
     .total {
       margin-top: 20px;
       font-size: 1.2rem;
       font-weight: 600;
     }
+
     .place-order {
       background: var(--blue);
       color: #fff;
@@ -177,9 +203,11 @@
       margin-top: 20px;
       cursor: pointer;
     }
+
     .place-order:hover {
       background: var(--dark-blue);
     }
+
     .close-btn {
       position: absolute;
       top: 15px;
@@ -188,12 +216,14 @@
       cursor: pointer;
       line-height: 1;
     }
+
     .success-message {
       display: none;
       text-align: center;
     }
   </style>
 </head>
+
 <body>
   <!-- Navigation Bar -->
   <nav>
@@ -212,60 +242,66 @@
   </section>
 
   <!-- Banner Image -->
-  <<img id="banner" src="https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/banner.jpg" alt="Jakey Juice Hot Sauce Banner>
+  <img
+    id="banner"
+    src="https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/banner.jpg"
+    alt="Jakey Juice Hot Sauce Banner"
+  >
 
   <!-- About Section -->
   <section id="about">
     <h1>ABOUT</h1>
     <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna
-      aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-      consequat.
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     </p>
   </section>
 
   <!-- Checkout Overlay & Modal -->
   <div class="checkout-overlay" id="checkoutOverlay">
     <div class="checkout-modal">
-      <span class="close-btn" id="closeCheckout">&times;</span>
+      <span class="close-btn" id="closeCheckout">×</span>
       <h2>Checkout</h2>
-      <div class="item">
-        <p><strong>Jakey Juice Hot Sauce</strong> - $12 per bottle</p>
-      </div>
-      <!-- Quantity Selector -->
+
+      <p><strong>Jakey Juice Hot Sauce</strong> — $12 per bottle</p>
+
       <div class="quantity">
         <button id="decreaseQty">-</button>
         <span id="qty">1</span>
         <button id="increaseQty">+</button>
       </div>
-      <!-- Total Price -->
+
       <p class="total">Total: $<span id="total">12</span></p>
-      <!-- Checkout Form -->
+
       <form id="checkoutForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" required>
-        <label for="email">Email</label>
-        <input type="email" id="email" required>
-        <label for="address">Address</label>
-        <input type="text" id="address" required>
-        <label for="city">City</label>
-        <input type="text" id="city" required>
-        <label for="state">State</label>
-        <input type="text" id="state" required>
-        <label for="zip">ZIP Code</label>
-        <input type="text" id="zip" required>
+        <label>Name</label>
+        <input type="text" required>
+
+        <label>Email</label>
+        <input type="email" required>
+
+        <label>Address</label>
+        <input type="text" required>
+
+        <label>City</label>
+        <input type="text" required>
+
+        <label>State</label>
+        <input type="text" required>
+
+        <label>ZIP Code</label>
+        <input type="text" required>
+
         <button type="submit" class="place-order">Place order (demo)</button>
       </form>
-      <!-- Success Message -->
+
       <div class="success-message" id="successMessage">
         <h3>Order received!</h3>
-        <p>This demo does not charge your card. Plug in your payment provider to go live.</p>
+        <p>This demo does not charge your card.</p>
       </div>
     </div>
   </div>
 
   <script>
-    // Handles showing/hiding the checkout modal and order logic
     const orderBtn = document.getElementById('orderBtn');
     const cartLink = document.getElementById('cartLink');
     const checkoutOverlay = document.getElementById('checkoutOverlay');
@@ -274,39 +310,40 @@
     const decreaseQty = document.getElementById('decreaseQty');
     const qtySpan = document.getElementById('qty');
     const totalSpan = document.getElementById('total');
+
     let qty = 1;
     const price = 12;
+
     function updateTotal() {
       totalSpan.textContent = (qty * price).toFixed(2);
     }
-    orderBtn.addEventListener('click', () => {
-      checkoutOverlay.style.display = 'flex';
-    });
-    cartLink.addEventListener('click', (e) => {
+
+    orderBtn.onclick = () => checkoutOverlay.style.display = 'flex';
+    cartLink.onclick = e => {
       e.preventDefault();
       checkoutOverlay.style.display = 'flex';
-    });
-    closeCheckout.addEventListener('click', () => {
-      checkoutOverlay.style.display = 'none';
-    });
-    increaseQty.addEventListener('click', () => {
+    };
+    closeCheckout.onclick = () => checkoutOverlay.style.display = 'none';
+
+    increaseQty.onclick = () => {
       qty++;
       qtySpan.textContent = qty;
       updateTotal();
-    });
-    decreaseQty.addEventListener('click', () => {
+    };
+
+    decreaseQty.onclick = () => {
       if (qty > 1) {
         qty--;
         qtySpan.textContent = qty;
         updateTotal();
       }
-    });
-    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+    };
+
+    document.getElementById('checkoutForm').onsubmit = e => {
       e.preventDefault();
-      // Real checkout integration would go here (e.g., redirect to Stripe)
-      document.getElementById('checkoutForm').style.display = 'none';
+      e.target.style.display = 'none';
       document.getElementById('successMessage').style.display = 'block';
-    });
+    };
   </script>
 </body>
 </html>
