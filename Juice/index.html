@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Jakey Juice Hot Sauce</title>
 
+  <!-- Montserrat font -->
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet"
@@ -19,27 +20,36 @@
       --gutter: 40px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body { height: 100%; }
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      line-height: 1.5;
-      color: #333;
-      background: #fff;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    /* NAV */
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "Montserrat", sans-serif;
+      line-height: 1.5;
+      color: #333;
+      background: #ffffff;
+    }
+
+    /* Top navigation bar */
     nav {
-      height: var(--nav-h);
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       gap: 40px;
       padding: 0 var(--gutter);
+      height: var(--nav-h);
       background: #f1f2f3;
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 10;
     }
 
@@ -50,32 +60,32 @@
       font-weight: 500;
     }
 
-    nav a:hover { text-decoration: underline; }
+    nav a:hover {
+      text-decoration: underline;
+    }
 
     /* HERO
-       Key idea:
-       - Push hero below fixed nav with margin-top (not padding-top).
-       - Height is viewport minus nav height using modern viewport units.
+       - Sits just under the fixed nav
+       - Fills the remaining viewport height
+       - Background image covers, bottle visible on mobile
     */
     #hero {
       margin-top: var(--nav-h);
-      height: calc(100vh - var(--nav-h));           /* fallback */
+      min-height: calc(100vh - var(--nav-h)); /* desktop & basic fallback */
       display: flex;
       align-items: center;
       justify-content: flex-start;
       padding: 0 var(--gutter);
-      background: url('https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg')
+      background:
+        url("https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/hero-bg.jpg")
         center / cover no-repeat;
     }
 
-    /* Mobile-safe viewport units */
+    /* Use dynamic viewport on modern mobile browsers to avoid address bar issues */
     @supports (height: 100dvh) {
-      #hero { height: calc(100dvh - var(--nav-h)); }
-    }
-
-    /* Slightly more stable on iOS address-bar behavior */
-    @supports (height: 100svh) and not (height: 100dvh) {
-      #hero { height: calc(100svh - var(--nav-h)); }
+      #hero {
+        min-height: calc(100dvh - var(--nav-h));
+      }
     }
 
     .hero-content {
@@ -102,10 +112,15 @@
       cursor: pointer;
     }
 
-    .order-btn:hover { background: var(--dark-blue); }
+    .order-btn:hover {
+      background: var(--dark-blue);
+    }
 
     /* Banner image under hero */
-    #banner { display: block; width: 100%; }
+    #banner {
+      display: block;
+      width: 100%;
+    }
 
     /* About section */
     #about {
@@ -128,11 +143,26 @@
       margin-bottom: 1rem;
     }
 
+    /* Simple placeholders for Contact / Ingredients anchors */
+    #contact,
+    #ingredients {
+      padding: 40px var(--gutter);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    #contact h2,
+    #ingredients h2 {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      color: var(--blue);
+    }
+
     /* Checkout modal overlay */
     .checkout-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       display: none;
       align-items: center;
       justify-content: center;
@@ -147,7 +177,7 @@
       border-radius: 8px;
       width: 100%;
       max-width: 500px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       max-height: 85vh;
       overflow: auto;
     }
@@ -169,15 +199,15 @@
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 16px; /* prevents iOS zoom on focus */
+      font-family: "Montserrat", sans-serif;
+      font-size: 16px; /* prevents iOS zoom */
     }
 
     .quantity {
       display: flex;
       align-items: center;
-      margin-top: 10px;
       gap: 10px;
+      margin-top: 10px;
     }
 
     .quantity button {
@@ -192,9 +222,9 @@
     }
 
     .quantity span {
-      font-size: 20px;
       min-width: 24px;
       text-align: center;
+      font-size: 20px;
     }
 
     .total {
@@ -215,7 +245,9 @@
       width: 100%;
     }
 
-    .place-order:hover { background: var(--dark-blue); }
+    .place-order:hover {
+      background: var(--dark-blue);
+    }
 
     .close-btn {
       position: absolute;
@@ -226,24 +258,54 @@
       line-height: 1;
     }
 
-    .success-message { display: none; text-align: center; }
+    .success-message {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
 
-    /* Responsive tweaks */
+    /* ---------- Mobile tweaks ---------- */
     @media (max-width: 640px) {
-      :root { --gutter: 18px; --nav-h: 70px; }
+      :root {
+        --gutter: 20px;
+        --nav-h: 70px;
+      }
 
-      nav { gap: 18px; }
+      nav {
+        gap: 18px;
+        padding: 0 var(--gutter);
+        height: var(--nav-h);
+      }
 
-      .hero-content h1 { font-size: 2.6rem; }
+      #hero {
+        margin-top: var(--nav-h);
+        padding: 0 var(--gutter);
+        /* focus the bottle more toward center on narrow screens */
+        background-position: 80% center;
+      }
 
-      .order-btn { width: 100%; }
-      #about { padding: 56px var(--gutter); }
-      #about h1 { font-size: 2.2rem; }
+      .hero-content h1 {
+        font-size: 2.6rem;
+      }
+
+      .order-btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      #about {
+        padding: 56px var(--gutter);
+      }
+
+      #about h1 {
+        font-size: 2.2rem;
+      }
     }
   </style>
 </head>
 
 <body>
+  <!-- Navigation Bar -->
   <nav>
     <a href="#" id="cartLink">Cart</a>
     <a href="#about">About</a>
@@ -251,6 +313,7 @@
     <a href="#ingredients">Ingredients</a>
   </nav>
 
+  <!-- Hero Section -->
   <section id="hero">
     <div class="hero-content">
       <h1>Loose the juice.</h1>
@@ -258,20 +321,35 @@
     </div>
   </section>
 
+  <!-- Banner Image -->
   <img
     id="banner"
     src="https://raw.githubusercontent.com/dddkeating-gif/24-thejake-design/main/Juice/banner.jpg"
     alt="Jakey Juice Hot Sauce Banner"
   />
 
+  <!-- About Section -->
   <section id="about">
     <h1>ABOUT</h1>
     <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
+      ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+      ullamco laboris nisi ut aliquip ex ea commodo consequat.
     </p>
   </section>
 
+  <!-- Simple placeholder sections so anchor links go somewhere -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Drop us a line about bulk orders, collaborations, or spicy ideas.</p>
+  </section>
+
+  <section id="ingredients">
+    <h2>Ingredients</h2>
+    <p>Spice list coming soon. This is a demo page only.</p>
+  </section>
+
+  <!-- Checkout Overlay & Modal -->
   <div class="checkout-overlay" id="checkoutOverlay">
     <div class="checkout-modal">
       <span class="close-btn" id="closeCheckout">×</span>
@@ -281,14 +359,19 @@
         <p><strong>Jakey Juice Hot Sauce</strong> - $12 per bottle</p>
       </div>
 
+      <!-- Quantity Selector -->
       <div class="quantity">
         <button id="decreaseQty" type="button">-</button>
         <span id="qty">1</span>
         <button id="increaseQty" type="button">+</button>
       </div>
 
-      <p class="total">Total: $<span id="total">12</span></p>
+      <!-- Total Price -->
+      <p class="total">
+        Total: $<span id="total">12</span>
+      </p>
 
+      <!-- Checkout Form -->
       <form id="checkoutForm">
         <label for="name">Name</label>
         <input type="text" id="name" required />
@@ -311,6 +394,7 @@
         <button type="submit" class="place-order">Place order (demo)</button>
       </form>
 
+      <!-- Success Message -->
       <div class="success-message" id="successMessage">
         <h3>Order received!</h3>
         <p>This demo does not charge your card. Plug in your payment provider to go live.</p>
@@ -319,16 +403,18 @@
   </div>
 
   <script>
-    const orderBtn = document.getElementById('orderBtn');
-    const cartLink = document.getElementById('cartLink');
+    const orderBtn        = document.getElementById('orderBtn');
+    const cartLink        = document.getElementById('cartLink');
     const checkoutOverlay = document.getElementById('checkoutOverlay');
-    const closeCheckout = document.getElementById('closeCheckout');
-    const increaseQty = document.getElementById('increaseQty');
-    const decreaseQty = document.getElementById('decreaseQty');
-    const qtySpan = document.getElementById('qty');
-    const totalSpan = document.getElementById('total');
+    const closeCheckout   = document.getElementById('closeCheckout');
+    const increaseQty     = document.getElementById('increaseQty');
+    const decreaseQty     = document.getElementById('decreaseQty');
+    const qtySpan         = document.getElementById('qty');
+    const totalSpan       = document.getElementById('total');
+    const checkoutForm    = document.getElementById('checkoutForm');
+    const successMessage  = document.getElementById('successMessage');
 
-    let qty = 1;
+    let qty   = 1;
     const price = 12;
 
     function updateTotal() {
@@ -346,8 +432,12 @@
 
     closeCheckout.addEventListener('click', () => {
       checkoutOverlay.style.display = 'none';
-      document.getElementById('checkoutForm').style.display = 'block';
-      document.getElementById('successMessage').style.display = 'none';
+      checkoutForm.style.display    = 'block';
+      successMessage.style.display  = 'none';
+      // reset quantity & total for demo feel
+      qty = 1;
+      qtySpan.textContent = qty;
+      updateTotal();
     });
 
     increaseQty.addEventListener('click', () => {
@@ -364,10 +454,10 @@
       }
     });
 
-    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+    checkoutForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      document.getElementById('checkoutForm').style.display = 'none';
-      document.getElementById('successMessage').style.display = 'block';
+      checkoutForm.style.display   = 'none';
+      successMessage.style.display = 'block';
     });
   </script>
 </body>
