@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Who's That Pokémon?</title>
+    
+    <script>
+        (function() {
+            // If the URL ends with "poke" (no slash), add the slash and reload immediately.
+            if (window.location.pathname.endsWith('/poke')) {
+                window.location.href = window.location.href + '/';
+            }
+        })();
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            height: 100vh; /* Fallback */
-            height: 100dvh; /* Mobile dynamic viewport */
+            height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -32,7 +42,7 @@
             margin: 0 0 40px 0;
             text-transform: none;
             max-width: 800px;
-            pointer-events: none; /* Let touches pass through title */
+            pointer-events: none;
         }
 
         input {
@@ -54,7 +64,7 @@
             position: absolute;
             bottom: -2vh;
             right: -2vh;
-            width: 55vh; /* Slightly smaller to ensure fit */
+            width: 55vh;
             height: 55vh;
             display: flex;
             align-items: flex-end;
@@ -68,11 +78,22 @@
             height: auto;
             object-fit: contain;
             filter: brightness(0) invert(1);
-            /* Smoothly fade the image in/out if src changes rapidly */
             transition: opacity 0.2s; 
         }
 
-        /* Canvas Overlay */
+        /* Debug Message Styling */
+        #debug-msg {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #ff4444;
+            padding: 10px;
+            z-index: 9999;
+            font-size: 12px;
+            display: none; /* Hidden unless error occurs */
+        }
+
         #transitionCanvas {
             position: fixed;
             top: 0;
@@ -83,33 +104,17 @@
             z-index: 100;
         }
 
-        /* --- Mobile Optimizations --- */
         @media (max-width: 768px) {
             .header { padding: 20px; }
-            
-            h1 { 
-                font-size: 3rem; 
-                margin-bottom: 20px; 
-            }
-            
-            input { 
-                width: 90%; 
-                height: 60px;
-                /* Prevents iOS zoom on focus */
-                font-size: 1.2rem; 
-            }
-            
-            .pokemon-container { 
-                width: 85vw; 
-                height: 85vw; 
-                right: -5vw;
-                bottom: -5vw;
-            }
+            h1 { font-size: 3rem; margin-bottom: 20px; }
+            input { width: 90%; height: 60px; font-size: 1.2rem; }
+            .pokemon-container { width: 85vw; height: 85vw; right: -5vw; bottom: -5vw; }
         }
     </style>
 </head>
 <body>
 
+    <div id="debug-msg"></div>
     <canvas id="transitionCanvas"></canvas>
 
     <div class="header">
@@ -121,14 +126,21 @@
         <img id="pokeImage" src="" alt="Pokemon">
     </div>
 
-    <script src="./gamedata.js"></script> 
+    <script src="gamedata.js"></script> 
     
     <script>
+        // --- Debugger ---
+        function showError(msg) {
+            const el = document.getElementById('debug-msg');
+            el.style.display = 'block';
+            el.innerHTML += msg + "<br>";
+            console.error(msg);
+        }
+
         // --- Configuration ---
         const BLOCK_SIZE = 60; 
-        const TRANSITION_SPEED_MODIFIER = 0.6; // Lower = Faster
+        const TRANSITION_SPEED_MODIFIER = 0.6; 
         
-        // --- Global State ---
         let currentIndex = 0;
         const input = document.getElementById('guessInput');
         const img = document.getElementById('pokeImage');
@@ -137,7 +149,12 @@
         const ctx = canvas.getContext('2d');
         let isTransitioning = false;
 
-        // --- Utils: Randomizer ---
+        // --- Image Error Handler ---
+        img.onerror = function() {
+            // This will show exactly why the image failed on screen
+            showError("Cannot find image: " + img.src);
+        };
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -145,49 +162,38 @@
             }
         }
 
-        // --- Utils: Color Palette ---
         function generatePalette(rawHex) {
-            // FIXED: Handle hex codes with or without the hash
             let c = rawHex.startsWith('#') ? rawHex.substring(1) : rawHex;
-            
             let rgb = parseInt(c, 16);
             let r = (rgb >> 16) & 0xff;
             let g = (rgb >>  8) & 0xff;
             let b = (rgb >>  0) & 0xff;
 
             const palette = [];
-            palette.push(`rgb(${r*0.5}, ${g*0.5}, ${b*0.5})`); // Deep Shade
-            palette.push(`rgb(${r*0.8}, ${g*0.8}, ${b*0.8})`); // Shade
-            palette.push(`rgb(${r}, ${g}, ${b})`);             // Base
-            palette.push(`rgb(${r + (255-r)*0.3}, ${g + (255-g)*0.3}, ${b + (255-b)*0.3})`); // Tint
-            palette.push(`rgb(${r + (255-r)*0.6}, ${g + (255-g)*0.6}, ${b + (255-b)*0.6})`); // Light Tint
+            palette.push(`rgb(${r*0.5}, ${g*0.5}, ${b*0.5})`);
+            palette.push(`rgb(${r*0.8}, ${g*0.8}, ${b*0.8})`);
+            palette.push(`rgb(${r}, ${g}, ${b})`);
+            palette.push(`rgb(${r + (255-r)*0.3}, ${g + (255-g)*0.3}, ${b + (255-b)*0.3})`);
+            palette.push(`rgb(${r + (255-r)*0.6}, ${g + (255-g)*0.6}, ${b + (255-b)*0.6})`);
             return palette;
         }
 
-        // --- Utils: Easing ---
-        // easeInOutQuint: More dramatic acceleration/deceleration
         function easeInOutQuint(x) {
             return x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2;
         }
 
-        // --- Transition Logic ---
         function runSmartTransition(nextColor, onComplete) {
             if (isTransitioning) return;
             isTransitioning = true;
-
             const width = window.innerWidth;
             const height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
-
             const cols = Math.ceil(width / BLOCK_SIZE);
             const rows = Math.ceil(height / BLOCK_SIZE);
             const palette = generatePalette(nextColor);
-
-            // Generate Grid with random delays
             let blocks = [];
             const maxDelay = 400 * TRANSITION_SPEED_MODIFIER; 
-            
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     blocks.push({
@@ -198,18 +204,134 @@
                     });
                 }
             }
-
             let startTime = null;
             const growDuration = 350 * TRANSITION_SPEED_MODIFIER; 
             const totalDuration = maxDelay + growDuration + 50; 
 
-            // PHASE 1: IN
             function animateIn(timestamp) {
                 if (!startTime) startTime = timestamp;
                 let elapsed = timestamp - startTime;
-                
                 ctx.clearRect(0, 0, width, height);
-
                 blocks.forEach(block => {
                     let blockTime = elapsed - block.delay;
                     if (blockTime < 0) blockTime = 0;
+                    let progress = Math.min(blockTime / growDuration, 1);
+                    let easedScale = easeInOutQuint(progress);
+                    if (easedScale > 0) {
+                        ctx.fillStyle = block.color;
+                        let size = BLOCK_SIZE * easedScale;
+                        let drawSize = size + 1.5; 
+                        let offset = (BLOCK_SIZE - size) / 2;
+                        ctx.fillRect(block.c * BLOCK_SIZE + offset, block.r * BLOCK_SIZE + offset, drawSize, drawSize);
+                    }
+                });
+                if (elapsed < totalDuration) {
+                    requestAnimationFrame(animateIn);
+                } else {
+                    onComplete(); 
+                    startTime = null;
+                    blocks.forEach(b => b.delay = Math.random() * maxDelay); 
+                    requestAnimationFrame(animateOut);
+                }
+            }
+
+            function animateOut(timestamp) {
+                if (!startTime) startTime = timestamp;
+                let elapsed = timestamp - startTime;
+                ctx.clearRect(0, 0, width, height);
+                let drawnCount = 0;
+                blocks.forEach(block => {
+                    let blockTime = elapsed - block.delay;
+                    if (blockTime < 0) blockTime = 0;
+                    let progress = Math.min(blockTime / growDuration, 1);
+                    let easedScale = 1 - easeInOutQuint(progress);
+                    if (easedScale > 0.01) {
+                        drawnCount++;
+                        ctx.fillStyle = block.color;
+                        let size = BLOCK_SIZE * easedScale;
+                        let drawSize = size + 1.5;
+                        let offset = (BLOCK_SIZE - size) / 2;
+                        ctx.fillRect(block.c * BLOCK_SIZE + offset, block.r * BLOCK_SIZE + offset, drawSize, drawSize);
+                    }
+                });
+                if (elapsed < totalDuration && drawnCount > 0) {
+                    requestAnimationFrame(animateOut);
+                } else {
+                    ctx.clearRect(0, 0, width, height);
+                    isTransitioning = false;
+                    input.focus();
+                }
+            }
+            requestAnimationFrame(animateIn);
+        }
+
+        function getEditDistance(a, b) {
+            if (a.length === 0) return b.length; 
+            if (b.length === 0) return a.length; 
+            var matrix = [];
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i-1) == a.charAt(j-1)) {
+                        matrix[i][j] = matrix[i-1][j-1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function loadPokemon() {
+            if (currentIndex >= window.pokemonList.length) {
+                alert("You caught them all! Reloading...");
+                location.reload();
+                return;
+            }
+            const currentData = window.pokemonList[currentIndex];
+            
+            // 3. PATH FIX: Simplified path logic
+            img.src = "images/" + currentData.filename;
+            
+            const safeColor = currentData.color.startsWith('#') ? currentData.color : '#' + currentData.color;
+            body.style.backgroundColor = safeColor;
+            input.value = "";
+        }
+
+        function checkAnswer() {
+            if (isTransitioning) return;
+            const userGuess = input.value.toLowerCase().trim();
+            const currentData = window.pokemonList[currentIndex];
+            const correctName = currentData.name.toLowerCase();
+            const allowedErrors = correctName.length > 6 ? 2 : 1;
+            const distance = getEditDistance(userGuess, correctName);
+            if (distance <= allowedErrors && userGuess.length > 0) {
+                let nextData = currentData; 
+                if (currentIndex + 1 < window.pokemonList.length) {
+                    nextData = window.pokemonList[currentIndex + 1];
+                }
+                const nextColor = nextData.color.startsWith('#') ? nextData.color : '#' + nextData.color;
+                runSmartTransition(nextColor, () => {
+                    currentIndex++;
+                    loadPokemon();
+                });
+            }
+        }
+
+        input.addEventListener('input', checkAnswer);
+        window.addEventListener('resize', () => {
+             canvas.width = window.innerWidth;
+             canvas.height = window.innerHeight;
+        });
+
+        // 4. ROBUST INIT: Checks if data loaded
+        if (window.pokemonList) {
+            shuffleArray(window.pokemonList);
+            loadPokemon();
+        } else {
+            showError("FATAL ERROR: gamedata.js did not load.<br>Check if file exists in /poke/ folder.");
+        }
+    </script>
+</body>
+</html>
