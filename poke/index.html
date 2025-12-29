@@ -121,12 +121,12 @@
         <img id="pokeImage" src="" alt="Pokemon">
     </div>
 
-    <script src="gamedata.js"></script> 
+    <script src="./gamedata.js"></script> 
     
     <script>
         // --- Configuration ---
         const BLOCK_SIZE = 60; 
-        const TRANSITION_SPEED_MODIFIER = 0.6; // Lower = Faster (0.6 is 60% of original time)
+        const TRANSITION_SPEED_MODIFIER = 0.6; // Lower = Faster
         
         // --- Global State ---
         let currentIndex = 0;
@@ -146,8 +146,10 @@
         }
 
         // --- Utils: Color Palette ---
-        function generatePalette(hex) {
-            let c = hex.substring(1); 
+        function generatePalette(rawHex) {
+            // FIXED: Handle hex codes with or without the hash
+            let c = rawHex.startsWith('#') ? rawHex.substring(1) : rawHex;
+            
             let rgb = parseInt(c, 16);
             let r = (rgb >> 16) & 0xff;
             let g = (rgb >>  8) & 0xff;
@@ -184,7 +186,6 @@
 
             // Generate Grid with random delays
             let blocks = [];
-            // Reduced max delay for snappier feel
             const maxDelay = 400 * TRANSITION_SPEED_MODIFIER; 
             
             for (let r = 0; r < rows; r++) {
@@ -199,7 +200,6 @@
             }
 
             let startTime = null;
-            // Faster block growth
             const growDuration = 350 * TRANSITION_SPEED_MODIFIER; 
             const totalDuration = maxDelay + growDuration + 50; 
 
@@ -207,165 +207,9 @@
             function animateIn(timestamp) {
                 if (!startTime) startTime = timestamp;
                 let elapsed = timestamp - startTime;
-                let allDone = true;
-
+                
                 ctx.clearRect(0, 0, width, height);
 
                 blocks.forEach(block => {
                     let blockTime = elapsed - block.delay;
                     if (blockTime < 0) blockTime = 0;
-                    
-                    let progress = Math.min(blockTime / growDuration, 1);
-                    if (progress < 1) allDone = false;
-
-                    let easedScale = easeInOutQuint(progress);
-
-                    if (easedScale > 0) {
-                        ctx.fillStyle = block.color;
-                        let size = BLOCK_SIZE * easedScale;
-                        // Overlap slightly to prevent hairline cracks
-                        let drawSize = size + 1.5; 
-                        let offset = (BLOCK_SIZE - size) / 2;
-                        
-                        ctx.fillRect(
-                            block.c * BLOCK_SIZE + offset, 
-                            block.r * BLOCK_SIZE + offset, 
-                            drawSize, drawSize
-                        );
-                    }
-                });
-
-                if (elapsed < totalDuration) {
-                    requestAnimationFrame(animateIn);
-                } else {
-                    onComplete(); // Swap Background/Pokemon
-                    
-                    // Reset for Out Phase
-                    startTime = null;
-                    // Reshuffle delays for variety
-                    blocks.forEach(b => b.delay = Math.random() * maxDelay); 
-                    requestAnimationFrame(animateOut);
-                }
-            }
-
-            // PHASE 2: OUT
-            function animateOut(timestamp) {
-                if (!startTime) startTime = timestamp;
-                let elapsed = timestamp - startTime;
-                
-                ctx.clearRect(0, 0, width, height);
-                
-                // Helper to check if canvas is clear
-                let drawnCount = 0;
-
-                blocks.forEach(block => {
-                    let blockTime = elapsed - block.delay;
-                    if (blockTime < 0) blockTime = 0;
-                    
-                    let progress = Math.min(blockTime / growDuration, 1);
-                    
-                    // Reverse easing
-                    let easedScale = 1 - easeInOutQuint(progress);
-
-                    if (easedScale > 0.01) {
-                        drawnCount++;
-                        ctx.fillStyle = block.color;
-                        let size = BLOCK_SIZE * easedScale;
-                        let drawSize = size + 1.5;
-                        let offset = (BLOCK_SIZE - size) / 2;
-                        ctx.fillRect(
-                            block.c * BLOCK_SIZE + offset, 
-                            block.r * BLOCK_SIZE + offset, 
-                            drawSize, drawSize
-                        );
-                    }
-                });
-
-                if (elapsed < totalDuration && drawnCount > 0) {
-                    requestAnimationFrame(animateOut);
-                } else {
-                    ctx.clearRect(0, 0, width, height);
-                    isTransitioning = false;
-                    input.focus();
-                }
-            }
-
-            requestAnimationFrame(animateIn);
-        }
-
-        // --- Game Logic ---
-        function getEditDistance(a, b) {
-            if (a.length === 0) return b.length; 
-            if (b.length === 0) return a.length; 
-            var matrix = [];
-            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
-            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i-1) == a.charAt(j-1)) {
-                        matrix[i][j] = matrix[i-1][j-1];
-                    } else {
-                        matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, Math.min(matrix[i][j-1] + 1, matrix[i-1][j] + 1));
-                    }
-                }
-            }
-            return matrix[b.length][a.length];
-        }
-
-        function loadPokemon() {
-            if (currentIndex >= window.pokemonList.length) {
-                // Optional: Reshuffle and restart?
-                alert("You caught them all! Reloading...");
-                location.reload();
-                return;
-            }
-            const currentData = window.pokemonList[currentIndex];
-            img.src = "./images/" + currentData.filename;
-            body.style.backgroundColor = currentData.color;
-            input.value = "";
-        }
-
-        function checkAnswer() {
-            if (isTransitioning) return;
-
-            const userGuess = input.value.toLowerCase().trim();
-            const currentData = window.pokemonList[currentIndex];
-            const correctName = currentData.name.toLowerCase();
-            
-            const allowedErrors = correctName.length > 6 ? 2 : 1;
-            const distance = getEditDistance(userGuess, correctName);
-
-            if (distance <= allowedErrors && userGuess.length > 0) {
-                
-                // Determine NEXT color for transition
-                let nextColor = currentData.color; 
-                if (currentIndex + 1 < window.pokemonList.length) {
-                    nextColor = window.pokemonList[currentIndex + 1].color;
-                }
-
-                runSmartTransition(nextColor, () => {
-                    currentIndex++;
-                    loadPokemon();
-                });
-            }
-        }
-
-        // --- Initialization ---
-        input.addEventListener('input', checkAnswer);
-        window.addEventListener('resize', () => {
-             canvas.width = window.innerWidth;
-             canvas.height = window.innerHeight;
-        });
-
-        // Start Game
-        if (window.pokemonList) {
-            // 1. Randomize the list
-            shuffleArray(window.pokemonList);
-            // 2. Load first
-            loadPokemon();
-        } else {
-            console.error("gamedata.js not found");
-        }
-    </script>
-</body>
-</html>
