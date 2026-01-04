@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/unveil",
+      "destination": "https://ingredient-insight--dddkeating.replit.app/",
+      "statusCode": 301
+    },
+    {
+      "source": "/unveil/:path*",
+      "destination": "https://ingredient-insight--dddkeating.replit.app/",
+      "statusCode": 301
+    }
+  ]
+}
